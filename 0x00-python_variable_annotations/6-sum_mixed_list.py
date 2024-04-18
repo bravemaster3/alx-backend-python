@@ -8,6 +8,6 @@ returns their sum as a float.
 import typing
 
 
-def sum_mixed_list(mxd_lst: typing.List[typing.Union[float, int]]) -> float:
+def sum_mixed_list(mxd_lst: typing.List[typing.Union[int, float]]) -> float:
     """sums a list of floats"""
     return sum(mxd_lst)
