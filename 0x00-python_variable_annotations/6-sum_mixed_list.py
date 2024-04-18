@@ -8,6 +8,6 @@ and returns their sum as a float.
 import typing
 
 
-def sum_list(input_list: typing.List[float]) -> float:
+def sum_list(input_list: typing.List) -> float:
     """sums a list of floats"""
     return sum(input_list)
