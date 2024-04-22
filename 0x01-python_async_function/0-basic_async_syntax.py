@@ -8,6 +8,7 @@ that waits for a random delay between 0 and max_delay
 
 
 async def wait_random(max_delay=10):
+    """Async function that prints a random number after waiting """
     from random import uniform
     import asyncio
 
