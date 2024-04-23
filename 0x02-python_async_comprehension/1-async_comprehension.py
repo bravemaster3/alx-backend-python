@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 """
-coroutine called async_generator that takes no arguments.
-
-The coroutine will loop 10 times, each time asynchronously wait 1 second,
- then yield a random number between 0 and 10. Use the random module
+The coroutine will collect 10 random numbers using an async
+comprehensing over async_generator, then return the 10 random numbers.
 """
 
 from typing import List
@@ -13,6 +11,6 @@ async_generator = __import__('0-async_generator').async_generator
 
 
 async def async_comprehension() -> List[float]:
-    """Async generator function"""
+    """Async comprehension"""
     output = [fun async for fun in async_generator()]
     return output
