@@ -9,7 +9,7 @@ to test that the method returns what it is supposed to
 import unittest
 from parameterized import parameterized
 from unittest.mock import patch, Mock
-from utils import access_nested_map, get_json
+from utils import access_nested_map, get_json, memoize
 
 
 class TestAccessNestedMap(unittest.TestCase):
@@ -56,3 +56,24 @@ class TestGetJson(unittest.TestCase):
 
         # Assert that the result matches the expected payload
         self.assertEqual(result, test_payload)
+
+
+class TestMemoize(unittest.TestCase):
+    """class definition"""
+    def test_memoize(self):
+        class TestClass:
+            def a_method(self):
+                return 42
+
+            @memoize
+            def a_property(self):
+                return self.a_method()
+
+        obj = TestClass()
+        with patch.object(obj, 'a_method', return_value=42) as mock_a_method:
+            result1 = obj.a_property
+            result2 = obj.a_property
+
+            mock_a_method.assert_called_once()
+            self.assertEqual(result1, 42)
+            self.assertEqual(result2, 42)
