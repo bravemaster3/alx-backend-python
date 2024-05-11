@@ -3,6 +3,8 @@
 Testing the client GithubOrgClient classes
 """
 
+from parameterized import parameterized_class
+from unittest.mock import patch, PropertyMock
 from fixtures import TEST_PAYLOAD
 import unittest
 from unittest.mock import patch, Mock, PropertyMock
@@ -69,6 +71,7 @@ class TestGithubOrgClient(unittest.TestCase):
     {"org_payload": TEST_PAYLOAD[0][0], "repos_payload": TEST_PAYLOAD[0][1]}
 ])
 class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """Class definition here"""
     @classmethod
     def setUpClass(cls):
         """Set up class"""
@@ -91,5 +94,53 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         public_repos = test_client.public_repos()
 
         expected_repos = [repo['name'] for repo in self.repos_payload]
+        self.assertEqual(public_repos, expected_repos)
+        self.mock_get.assert_called()
+
+
+@parameterized_class([
+    {"org_payload": TEST_PAYLOAD[0][0], "repos_payload": TEST_PAYLOAD[0][1]}
+])
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """Class definition here"""
+    @classmethod
+    def setUpClass(cls):
+        """Set up class"""
+        cls.get_patcher = patch('requests.get')
+        cls.mock_get = cls.get_patcher.start()
+
+    @classmethod
+    def tearDownClass(cls):
+        """Tear down class"""
+        cls.get_patcher.stop()
+
+    def test_public_repos(self):
+        """Test public repos"""
+        self.mock_get.return_value.json.side_effect = [
+            self.org_payload, self.repos_payload,
+            self.org_payload, self.repos_payload
+        ]
+
+        test_client = GithubOrgClient("google")
+        public_repos = test_client.public_repos()
+
+        expected_repos = [repo['name'] for repo in self.repos_payload]
+        self.assertEqual(public_repos, expected_repos)
+        self.mock_get.assert_called()
+
+    def test_public_repos_with_license(self):
+        """Test public repos with license"""
+        self.mock_get.return_value.json.side_effect = [
+            self.org_payload, self.repos_payload,
+            self.org_payload, self.repos_payload
+        ]
+
+        test_client = GithubOrgClient("google")
+        public_repos = test_client.public_repos("apache-2.0")
+        expected_repos = [
+            repo['name'] for repo in self.repos_payload
+            if repo and isinstance(repo, dict) and 'license' in repo
+            and repo['license'] and repo['license'].get('key') == 'apache-2.0'
+        ]
         self.assertEqual(public_repos, expected_repos)
         self.mock_get.assert_called()
